@@ -1,59 +1,38 @@
 // // Browser Non-Strict
+// console.log
+// function
+// objects method
+// function inside  method
 
-// // console.log
-// // function
-// // objects method
-// // function inside  method
+// console.log(this) => returns Window object
 
-// // console.log(this)
+// function
 
-// // function
-
-// function test() {
-//   this.name = "Mrinal";
-//   console.log(this);
+// function test(){
+//      console.log(this)
 // }
 
-// test();
-
-// // let obj = {
-// //   name: "Adam",
-// //   age: 27,
-// //   greet: function () {
-// //     console.log(this);
-// //   },
-// // };
-
-// // let obj2 = {
-// //   name: "Adam",
-// //   age: 27,
-// //   greet: function () {
-// //      function sayHi() {
-// //       console.log(this);
-// //     };
-// //     sayHi()
-// //   },
-// // };
-
-// // obj2.greet();
-
+// test() => returns Window object
 
 let obj = {
-    name: "Adam",
-    age: 27,
-    greet: function () {
-      console.log(this);
-    },
-  };
-
-  obj.greet() // 1
-
-let obj4 = {
   name: "Adam",
-
-  sayHello: () => {
+  age: 27,
+  greet: function () {
     console.log(this);
   },
 };
 
-obj4.sayHello()// 2
+obj.greet(); // returns Object obj
+
+//   let obj2 = {
+//     name: "Adam",
+//     age: 27,
+//     greet: function () {
+//        function sayHi() {
+//         console.log(this);
+//       };
+//       sayHi()
+//     },
+//   };
+
+//   obj2.greet(); => returns Window object since it is not a part of the object, it returns a function.

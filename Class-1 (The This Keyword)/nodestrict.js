@@ -7,9 +7,14 @@
 // objects method
 // function inside  method
 
-//  console.log(this)
+//  console.log(this) => returns {}
 
 // function
+
+// function test() {
+//   console.log(this);
+// }
+// test(); => returns undefined
 
 // let obj = {
 //     name: "Adam",
@@ -19,7 +24,7 @@
 //     },
 //   };
 
-//   obj.greet()
+//   obj.greet() => returns Object obj
 
 // //   // let obj2 = {
 // //   //   name: "Adam",
@@ -32,12 +37,12 @@
 // //   //   },
 // //   // };
 
-// //   // obj2.greet();
+// //   // obj2.greet(); => returns undefined since it is not a part of any object
 
 // function test() {
 //   console.log(this);
 // }
-// test();
+// test(); => returns undefined
 
 // // Arrow function
 
@@ -45,9 +50,9 @@
 //   console.log(this);
 // };
 
-// test2();
+// test2(); => 
 
-// why there is this difference?
+// the difference doesn't exist here. both return undefined.
 
 
 
