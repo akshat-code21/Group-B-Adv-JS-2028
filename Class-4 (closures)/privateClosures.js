@@ -30,3 +30,8 @@ class BankAccount {
 let acc = new BankAccount(10000);
 
 console.log(acc._balance);
+
+
+// how we used to do it before 2022 using closures for private methods.
+
+// we move all private methods to the constructor.

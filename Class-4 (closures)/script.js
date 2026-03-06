@@ -1,6 +1,6 @@
 // Closures
 
-// Lexical Scope?
+// Lexical Scope? => the scope of a variable is determined by where the code is written in the source.
 
 // function outer() {
 //   let a = 10
