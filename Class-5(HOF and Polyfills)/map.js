@@ -20,7 +20,7 @@ console.log(sqr) // Let us say you do not have map
 Array.prototype.myMap = function (callback) {
   //  
 
-
+  // console.log(this) returns the array itself. since it is function inside object. Arrays are treated as objects in JavaScript.
 
   if (typeof callback != "function") {
 
@@ -31,7 +31,7 @@ Array.prototype.myMap = function (callback) {
 
   for (let i = 0; i < this.length; i++) {
    
-    resultantArray.push(callback(this[i]));
+    resultantArray.push(callback(this[i])); // callback(this[i]) -> callback.call(thisArg, this[i], i, this)
   }
 
   return resultantArray;
