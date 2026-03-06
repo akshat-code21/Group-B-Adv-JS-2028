@@ -18,13 +18,13 @@
 // Constuctor Function
 
 function Pizaa(size, toppings, preference, crust) {
-  // this --> {}
+  // this --> {}....inside a function, this refers to the global object, to empty that object we use the new keyword
   this.size = size;
   this.toppings = toppings;
   this.preference = preference;
   this.crust = crust;
 
-
+ 
   this.serve  = function(){
     
   }
@@ -58,7 +58,7 @@ function create(size, toppings) {
   };
 
   return obj;
-}
+} // doing this
 
 const pizza1 = create("Medium", ["tomato", "chesse"]);
 const pizza2 = create("Small" , ['Onion' , 'Cheese'])
