@@ -1,26 +1,31 @@
-class Pizaa {
-   static totalPizzaMade = 0;
-   #size
-   
+// why do we need classes when we have constructor functions?
+// answer: classes are syntactic sugar over constructor functions. they are more readable and easier to write. they give more control over the code.
 
+class Pizaa {
+  static totalPizzaMade = 0;
+  size;
+  //   #size; // private field
 
   constructor(size, toppings, preference, crust) {
-    this.#size = size;
+    this.size = size;
+    // this.#size = size;
     this.toppings = toppings;
     this.preference = preference;
     this.crust = crust;
-    Pizaa.totalPizzaMade++
-  }
+    Pizaa.totalPizzaMade++;
+  } // responsible to create the objects
 
-  static showTotalPizza(){
-    console.log(`${Pizaa.totalPizzaMade}`)
-  }
+  static showTotalPizza() {
+    console.log(`${Pizaa.totalPizzaMade}`);
+  } // static methods are called on the class, not the object.
 
-  // Closures - Next Class
+  // Closures - Next Class => best thing for private methods.
 
   serve() {
     console.log(`This is a ${this.size} Pizza from parent `);
-  }
+    // console.log(`This is a ${this.#size} Pizza from parent `);
+	
+  }// automatically copied in each object. equivalent to prototype functions
 }
 
 class StuffedCrustPizaa extends Pizaa {
@@ -60,8 +65,7 @@ console.log(order5);
 // order1.serve();
 // order2.describe();
 
-Pizaa.showTotalPizza()
+Pizaa.showTotalPizza();
 
 // Classcial Inhertance in JS (prototypal)
 // Static properties and methods
-
