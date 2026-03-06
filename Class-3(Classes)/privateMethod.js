@@ -23,6 +23,8 @@ class Pizza {
   serve() {
     console.log(this.#formatPizzaDetails());
   }
+
+  // only public methods can call private methods. before 2022, we used to need closures to achieve this.
 }
 
 class StuffedCrustPizza extends Pizza {
