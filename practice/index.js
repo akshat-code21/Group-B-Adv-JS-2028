@@ -318,3 +318,21 @@
 //   .map((p) => `${p.name} is adult`)
 //   .reduce((prev, curr) => `${prev}${prev ? "; " : ""}${curr}`);
 // console.log(result);
+
+"use strict"
+class Counter {
+  count = 0;
+
+  increment = function(){
+    this.count++;
+  };
+}
+
+const c1 = new Counter();
+const c2 = new Counter();
+
+c1.increment();
+c1.increment();
+
+console.log(c1.count);
+console.log(c2.count);
