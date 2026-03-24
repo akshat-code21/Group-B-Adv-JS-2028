@@ -1,66 +1,84 @@
-# Class-7 (Polyfills of call, apply, bind) - Detailed Notes with Code and Solutions
+# Class-7 (Polyfills of call/apply/bind) - Deep Notes (Internals, Edge Cases, Code)
 
-## 1) Polyfill idea
+## 1) Why learn polyfills for function methods?
 
-To simulate `call/apply`:
-1. attach function temporarily on context object,
-2. call it as object method,
-3. remove temporary property.
+### Definition
+A **polyfill** is your custom implementation of standard behavior when native support is missing or to understand internals.
 
-Using `Symbol` avoids key collisions.
+### Interview expectation
+You should explain not only code, but:
+- how `this` is forced,
+- why temporary property is required,
+- why cleanup is necessary,
+- how edge cases are handled.
 
 ---
 
-## 2) `myCall` solution
+## 2) Internal trick behind call/apply
+
+If `fn` must run with `this = obj`, do:
+1. attach `fn` to `obj` temporarily
+2. call it as `obj.temp()`
+3. remove temp key
+
+Why this works: method invocation sets `this` to object before dot.
+
+### Real-life analogy
+Temporary employee badge:
+- give visitor temporary company badge (attach function),
+- allow one-time access (invoke),
+- collect badge back (delete key).
+
+---
+
+## 3) `myCall` deep implementation
 
 ```js
 Function.prototype.myCall = function (context, ...args) {
   const ctx = context == null ? globalThis : Object(context);
-  const key = Symbol("fn");
-  ctx[key] = this;
+  const key = Symbol("tempFn");
+  ctx[key] = this; // this is original function
   const result = ctx[key](...args);
   delete ctx[key];
   return result;
 };
-
-function greet(city, country) {
-  return `${this.name} ${city} ${country}`;
-}
-const p = { name: "Steve" };
-console.log(greet.myCall(p, "Bengaluru", "India"));
 ```
 
-### Output
-`Steve Bengaluru India`
+### Step-by-step execution
+For `greet.myCall(user, "BLR")`:
+1. `this` inside `myCall` = `greet`
+2. create safe temp key
+3. `user[key] = greet`
+4. invoke `user[key]("BLR")` -> now `this` inside greet is `user`
+5. cleanup
+6. return result
 
 ---
 
-## 3) `myApply` solution
+## 4) `myApply` deep implementation
+
+Difference from call: takes args array.
 
 ```js
 Function.prototype.myApply = function (context, argsArray) {
   const ctx = context == null ? globalThis : Object(context);
-  const key = Symbol("fn");
+  const key = Symbol("tempFn");
   ctx[key] = this;
+
+  if (argsArray != null && !Array.isArray(argsArray)) {
+    throw new TypeError("CreateListFromArrayLike called on non-object");
+  }
+
   const args = argsArray == null ? [] : argsArray;
   const result = ctx[key](...args);
   delete ctx[key];
   return result;
 };
-
-function add(a, b, c) {
-  return `${this.name}: ${a + b + c}`;
-}
-const obj = { name: "Calc" };
-console.log(add.myApply(obj, [10, 20, 30]));
 ```
-
-### Output
-`Calc: 60`
 
 ---
 
-## 4) `myBind` solution
+## 5) `myBind` deep implementation
 
 ```js
 Function.prototype.myBind = function (context, ...boundArgs) {
@@ -69,36 +87,83 @@ Function.prototype.myBind = function (context, ...boundArgs) {
     return originalFn.myApply(context, [...boundArgs, ...lateArgs]);
   };
 };
+```
 
+### Behavior explained
+- returns a new function
+- stores context + pre-filled args now
+- executes later with remaining args
+
+---
+
+## 6) Full runnable test
+
+```js
 function greet(city, country) {
-  return `Hi ${this.name} from ${city}, ${country}`;
+  return `Hello ${this.name} from ${city}, ${country}`;
 }
+
 const user = { name: "Adam" };
-const g = greet.myBind(user, "Mumbai");
-console.log(g("India"));
+
+console.log(greet.myCall(user, "Bengaluru", "India"));
+console.log(greet.myApply(user, ["Mumbai", "India"]));
+
+const bound = greet.myBind(user, "Delhi");
+console.log(bound("India"));
 ```
 
 ### Output
-`Hi Adam from Mumbai, India`
+1. `Hello Adam from Bengaluru, India`
+2. `Hello Adam from Mumbai, India`
+3. `Hello Adam from Delhi, India`
 
 ---
 
-## 5) Edge cases and fixes
+## 7) Critical edge cases
 
-1. `context` null/undefined -> fallback to `globalThis`
-2. primitive context -> `Object(context)`
-3. property collision -> use `Symbol`
-4. `apply` second arg null -> `[]`
+1. `context` is null/undefined -> use `globalThis`
+2. primitive context -> wrap with `Object(context)`
+3. key collision -> use `Symbol`, not `tempFn`
+4. `apply` with null args -> treat as `[]`
+5. ensure temporary key is deleted even if function throws
+
+Safer cleanup pattern:
+```js
+try {
+  return ctx[key](...args);
+} finally {
+  delete ctx[key];
+}
+```
 
 ---
 
-## 6) Practice with answers
+## 8) Advanced interview topic: bind with `new`
 
-1. Why `Symbol` in polyfill?  
-   **Answer:** Prevent overwriting existing properties.
+Native `bind` has constructor behavior:
+- if bound function is used with `new`, `this` should be new instance, not bound context.
 
-2. How is `call` different from `apply` internally?  
-   **Answer:** Same core logic; only argument intake differs.
+Basic classroom polyfill generally skips this complexity.  
+Mentioning this in interview shows strong understanding.
 
-3. Why does `bind` return function?  
-   **Answer:** It stores context now and executes later.
+---
+
+## 9) Real-life use cases
+
+1. Framework internals to preserve context for callbacks
+2. Utility library function borrowing between objects
+3. Legacy browser support and polyfill strategies
+4. Debugging bugs from incorrect `this` behavior
+
+---
+
+## 10) Practice with solutions
+
+### Q1: Why Symbol key?
+To avoid overriding existing object keys.
+
+### Q2: call vs apply internal difference?
+Only argument input format differs.
+
+### Q3: Why does bind return function?
+Because it stores context for future execution (deferred invocation).
