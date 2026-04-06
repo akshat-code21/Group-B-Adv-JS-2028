@@ -319,20 +319,60 @@
 //   .reduce((prev, curr) => `${prev}${prev ? "; " : ""}${curr}`);
 // console.log(result);
 
-"use strict"
-class Counter {
-  count = 0;
+// "use strict"
+// class Counter {
+//   count = 0;
 
-  increment = function(){
-    this.count++;
+//   increment = function(){
+//     this.count++;
+//   };
+// }
+
+// const c1 = new Counter();
+// const c2 = new Counter();
+
+// c1.increment();
+// c1.increment();
+
+// console.log(c1.count);
+// console.log(c2.count);
+
+Function.prototype.myCall = function (ctx, ...args) {
+  ctx = ctx || globalThis;
+
+  ctx.tempFn = this;
+  const res = ctx.tempFn(...args);
+  delete ctx.tempFn;
+  return res;
+};
+
+Function.prototype.myApply = function (ctx, argsArray) {
+  ctx = ctx || globalThis;
+  argsArray = argsArray || [];
+
+  if (!Array.isArray(argsArray)) {
+    throw new TypeError("Arguements not passed as an array.");
+  }
+
+  const fnSymbol = Symbol();
+  ctx[fnSymbol] = this;
+
+  const res = ctx[fnSymbol](...argsArray);
+
+  delete ctx[fnSymbol];
+
+  return res;
+};
+
+Function.prototype.myBind = function (ctx, ...boundArgs) {
+  const originalFn = this;
+  return function (...lateArgs) {
+    return originalFn.myApply(ctx, [...boundArgs, ...lateArgs]);
   };
-}
+};
 
-const c1 = new Counter();
-const c2 = new Counter();
-
-c1.increment();
-c1.increment();
-
-console.log(c1.count);
-console.log(c2.count);
+Function.prototype.myBind = function (ctx, ...boundArgs) {
+  return (...lateArgs) => {
+    return this.myApply(ctx, [...boundArgs, ...lateArgs]);
+  };
+};
