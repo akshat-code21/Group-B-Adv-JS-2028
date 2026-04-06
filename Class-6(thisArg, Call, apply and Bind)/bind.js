@@ -1,7 +1,7 @@
 // let button = document.getElementById("showName");
 // console.log;
 
-// const greetUser = greet.bind(user, 'Mumbai');
+
 
 
 // button.addEventListener("click", greetUser);
@@ -16,6 +16,9 @@ const user = {
   name: "steve",
 };
 
+const greetUser1 = greet.bind(user, 'Mumbai');
+greetUser1('India')
+
 Function.prototype.myBind = function (context, ...boundArgs) {
   // this -> greet
   const originalFn = this;
@@ -25,6 +28,6 @@ Function.prototype.myBind = function (context, ...boundArgs) {
   };
 };
 
-const greetUser = greet.myBind(user , 'Mumbai');
+const greetUser2 = greet.myBind(user , 'Mumbai');
 
-greetUser('India')
+greetUser2('India')
