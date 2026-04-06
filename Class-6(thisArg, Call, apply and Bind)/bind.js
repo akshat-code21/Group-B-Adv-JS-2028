@@ -24,7 +24,7 @@ Function.prototype.myBind = function (context, ...boundArgs) {
   const originalFn = this;
 
   return function (...lateArgs) {
-    return originalFn.apply(context, [...boundArgs, ...lateArgs]);
+    return originalFn.apply(context, [...boundArgs, ...lateArgs]); // if apply method of js not allowed, use your apply polyfill
   };
 };
 
