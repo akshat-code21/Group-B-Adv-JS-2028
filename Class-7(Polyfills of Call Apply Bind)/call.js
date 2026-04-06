@@ -33,4 +33,4 @@ Function.prototype.myCall = function (context, ...args) {
   return result;
 };
 
-person1.greet.myCall(person2, "Bengaluru", "India");
+person1.greet.myCall(person2, "Bengaluru", "India"); // borrowing also handled
