@@ -376,3 +376,80 @@ Function.prototype.myBind = function (ctx, ...boundArgs) {
     return this.myApply(ctx, [...boundArgs, ...lateArgs]);
   };
 };
+
+
+
+function promiseAny(iterable) {
+  //write your code here ===============================================       
+  return new Promise((res,rej) => {
+      if (!Array.isArray(iterable)) {
+          return rej(new TypeError("Input must be an array"));
+      }
+
+      // ⚡ empty array → rej immediately
+      if (iterable.length === 0) {
+          return rej([]);
+      }
+
+      let rejectedCount = 0;
+      const errors = [];
+
+      iterable.forEach((iter) => {
+          Promise.resolve(iter).then(res).catch((err) => {
+              errors[index] = err;
+              rejectedCount++;
+
+              if (rejectedCount === iterable.length) {
+                  rej(errors); // ✅ all failed
+              }
+          })
+      })
+  })
+}
+
+
+
+function all(promises) {
+  //write your code here ===============================================
+  return new Promise((resolve, reject) => {
+      if (!Array.isArray(promises)) {
+          return reject(new TypeError("Input must be an array"));
+      }
+
+      const results = [];
+      let completed = 0;
+
+      if (promises.length === 0) {
+          return resolve([]);
+      }
+
+      promises.forEach((promise, index) => {
+          // Handle non-promise values also
+          Promise.resolve(promise)
+              .then((value) => {
+                  results[index] = value;
+                  completed++;
+
+                  if (completed === promises.length) {
+                      resolve(results);
+                  }
+              })
+              .catch(reject); // reject immediately
+      });
+  });
+}
+
+function promiseRace(iterable) {
+  //write your code here ===============================================
+  return new Promise((res,rej) => {
+      if(!Array.isArray(iterable))
+          return rej(new TypeError("Input must be an array"));
+      
+      if(iterable.length === 0)
+          return rej([]);
+      
+      iterable.forEach((iter) => {
+          Promise.resolve(iter).then(res, rej);
+      })
+  })
+}
