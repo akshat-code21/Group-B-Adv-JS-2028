@@ -1,67 +1,94 @@
 class MyPromise {
   constructor(executor) {
-    (this.state = "pending"), (this.value = undefined);
+    this.state = "pending";
+    this.value = undefined;
     this.reason = undefined;
-    this.onFullifilledCallbacks = [];
+    this.onFulfilledCallbacks = [];
     this.onRejectedCallbacks = [];
 
     const resolve = (value) => {
       if (this.state !== "pending") return;
-
       this.state = "fulfilled";
       this.value = value;
 
-      this.onFullifilledCallbacks.forEach((cb) => cb(value));
+      this.onFulfilledCallbacks.forEach((cb) => cb());
     };
 
     const reject = (reason) => {
       if (this.state !== "pending") return;
-
       this.state = "rejected";
       this.reason = reason;
 
-      this.onRejectedCallbacks.forEach((cb) => cb(reason));
+      this.onRejectedCallbacks.forEach((cb) => cb());
     };
 
     try {
       executor(resolve, reject);
-    } catch (error) {
-      reject(error);
+    } catch (err) {
+      reject(err);
     }
   }
 
-  then(onFullifilled, onRejeceted) {
-    if (typeof onFullifilled !== "function") {
-      onFullifilled = (value) => value;
-    }
+  then(onFulfilled, onRejected) {
+    return new MyPromise((resolve, reject) => {
+      onFulfilled = typeof onFulfilled === "function" ? onFulfilled : (v) => v;
 
-    if (typeof onRejeceted !== "function") {
-      onRejeceted = (reason) => {
-        throw reason;
+      onRejected =
+        typeof onRejected === "function"
+          ? onRejected
+          : (e) => {
+              throw e;
+            };
+
+      const handleFulfilled = () => {
+        queueMicrotask(() => {
+          try {
+            const result = onFulfilled(this.value);
+            result instanceof MyPromise
+              ? result.then(resolve, reject)
+              : resolve(result);
+          } catch (err) {
+            reject(err);
+          }
+        });
       };
-    }
 
-    if (this.state === "fulfilled") {
-      onFullifilled(this.value);
-    } else if ((this.state = "rejected")) {
-      onRejeceted(this.reason);
-    } else {
-      this.onFullifilledCallbacks.push(onFullifilled);
-      this.onRejectedCallbacks.push(onRejeceted);
-    }
+      const handleRejected = () => {
+        queueMicrotask(() => {
+          try {
+            const result = onRejected(this.reason);
+            result instanceof MyPromise
+              ? result.then(resolve, reject)
+              : resolve(result);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      };
+
+      if (this.state === "fulfilled") {
+        handleFulfilled();
+      } else if (this.state === "rejected") {
+        handleRejected();
+      } else {
+        this.onFulfilledCallbacks.push(handleFulfilled);
+        this.onRejectedCallbacks.push(handleRejected);
+      }
+    });
   }
 
-  catch(onRejeceted) {
-    if (typeof onRejeceted !== "function") {
-      onRejeceted = (reason) => {
-        throw reason;
-      };
-    }
+  catch(onRejected) {
+    return this.then(null, onRejected);
   }
 }
 
-let p1 = new Promise(function (resolve, reject) {
-  // resolve // reject
+const p = new MyPromise((resolve, reject) => {
+  // resolve(10);
+  reject("Error!");
 });
 
-p1.then().catch();
+p.then((val) => {
+  console.log("Resolved:", val);
+}).catch(() => {
+  console.log("errror");
+});
