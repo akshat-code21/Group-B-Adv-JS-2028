@@ -3,7 +3,7 @@
 // all , allSettled , race , any
 
 function fetchUserData() {
-  return new Promise((resolve) => {
+  return new Promise((resolve,) => {
     setTimeout(() => resolve({ userId: 1, username: "JohnDoe" }), 2000);
   });
 }
