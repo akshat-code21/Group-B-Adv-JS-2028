@@ -10,3 +10,5 @@ function applyDiscount(price) {
     return applyDiscount(discountedPrice);
   };
 }
+
+console.log(applyDiscount(100)(10)(20)(30)());
