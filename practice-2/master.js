@@ -110,30 +110,25 @@ function myPromiseAllSettled(items) {
 }
 
 Function.prototype.myCall = function (context, ...args) {
-  context = context | globalThis;
+  ctx = context || globalThis;
+  const key = Symbol("fn");
+  ctx[key] = this;
 
-  const uniqueKey = Symbol("fn");
-  context[uniqueKey] = this;
-
-  const result = context[uniqueKey](...args);
-
-  delete context[uniqueKey];
-
-  return result;
+  const res = ctx[key](...args);
+  delete ctx[key];
+  return res;
 };
 
 Function.prototype.myApply = function (ctx, argsArray) {
   ctx = ctx || globalThis;
-  const args = argsArray || [];
+  let args = argsArray || [];
 
-  const uniqueKey = Symbol("fn");
-  ctx[uniqueKey] = this;
+  const key = Symbol("fn");
+  ctx[key] = this;
 
-  const result = ctx[uniqueKey](...args);
-
-  delete ctx[uniqueKey];
-
-  return result;
+  const res = ctx[key](...args);
+  delete ctx[key];
+  return res;
 };
 
 Function.prototype.myBind = function (ctx, ...outerArgs) {
@@ -143,6 +138,18 @@ Function.prototype.myBind = function (ctx, ...outerArgs) {
     return originalFn.apply(ctx, [...outerArgs, ...innerArgs]);
   };
 };
+
+function greet(city, country) {
+  return `Hello ${this.name} from ${city}, ${country}`;
+}
+
+const user = { name: "Adam" };
+
+console.log(greet.myCall(user, "Bengaluru", "India"));
+console.log(greet.myApply(user, ["Mumbai", "India"]));
+
+const bound = greet.myBind(user, "Delhi");
+console.log(bound("India"));
 
 Array.prototype.myMap = function (callback, thisArg) {
   if (typeof callback != "function") {
