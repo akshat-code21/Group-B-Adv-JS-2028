@@ -203,3 +203,15 @@ function throttleAsync(fn, interval) {
     return pendingPromise;
   };
 }
+
+
+function throttle(fn,interval){
+    let lastCallTime = 0;
+    return (...args) => {
+        let now = Date.now();
+        if(now - lastCallTime >= interval){
+            lastCallTime = now;
+            fn.apply(this,args);
+        }
+    }
+}

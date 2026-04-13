@@ -106,3 +106,14 @@ function debounceAsync(fn, delay) {
     });
   };
 }
+
+function debounce(fn, delay) {
+  let timeoutId = null;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      timeoutId = null;
+      fn.apply(this, args);
+    }, delay);
+  };
+}
