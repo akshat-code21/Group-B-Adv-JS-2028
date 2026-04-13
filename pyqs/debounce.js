@@ -117,3 +117,20 @@ function debounce(fn, delay) {
     }, delay);
   };
 }
+
+function debounce(fn, delay, { leading = false, trailing = true } = {}) {
+  let timer;
+
+  return function (...args) {
+    const callNow = leading && !timer;
+
+    clearTimeout(timer);
+
+    timer = setTimeout(() => {
+      if (trailing) fn.apply(this, args);
+      timer = null;
+    }, delay);
+
+    if (callNow) fn.apply(this, args);
+  };
+}

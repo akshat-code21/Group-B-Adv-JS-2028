@@ -204,14 +204,39 @@ function throttleAsync(fn, interval) {
   };
 }
 
-
-function throttle(fn,interval){
-    let lastCallTime = 0;
-    return (...args) => {
-        let now = Date.now();
-        if(now - lastCallTime >= interval){
-            lastCallTime = now;
-            fn.apply(this,args);
-        }
+function throttle(fn, interval) {
+  let lastCallTime = 0;
+  return (...args) => {
+    let now = Date.now();
+    if (now - lastCallTime >= interval) {
+      lastCallTime = now;
+      fn.apply(this, args);
     }
+  };
+}
+
+function throttle(fn, limit, { leading = true, trailing = true } = {}) {
+  let lastCall = 0;
+  let timer;
+
+  return function (...args) {
+    const now = Date.now();
+
+    if (!lastCall && !leading) lastCall = now;
+
+    const remaining = limit - (now - lastCall);
+
+    if (remaining <= 0) {
+      clearTimeout(timer);
+      timer = null;
+      lastCall = now;
+      fn.apply(this, args);
+    } else if (trailing && !timer) {
+      timer = setTimeout(() => {
+        lastCall = leading ? Date.now() : 0;
+        timer = null;
+        fn.apply(this, args);
+      }, remaining);
+    }
+  };
 }
