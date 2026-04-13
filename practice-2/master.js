@@ -197,3 +197,14 @@ Array.prototype.myReduce = function (callback, initialValue) {
   }
   return acc;
 };
+
+
+function createPipe(...fns) {
+  // Write your code here
+  return x => fns.reduce((acc,fn) => fn(acc),x)
+}
+
+function compose(...fns) {
+  // Write your code here
+  return x => arr.reduceRight((acc,fn) => fn(acc),x)
+}
